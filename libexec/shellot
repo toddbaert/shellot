@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
+declare -A STEPS
+source ./test.shellot
+for KEY in "${!STEPS[@]}"; do
+  echo "Step: $KEY"
+  echo `${STEPS[$KEY]}`
+done
