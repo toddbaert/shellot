@@ -1,9 +1,55 @@
 #!/usr/bin/env bash
-set -e
+
+# TODO: add param for feature file
+# TODO: add param for test file
+# TODO: remove gherkin starting keywords (When, Then, etc)
+# TODO: add "missing scenario" check
+# TODO: add "missing scenario" auto-scaffolding
+# TODO: add results table
+# TODO: make "STEPS" associative array name configurable
+
+feature=`cat ./samples/example.feature`
+
+if command -v tput &>/dev/null && tty -s; then
+  RED=$(tput setaf 1)
+  GREEN=$(tput setaf 2)
+  NORMAL=$(tput sgr0)
+else
+  RED=$(echo -en "\e[31m")
+  GREEN=$(echo -en "\e[32m")
+  NORMAL=$(echo -en "\e[00m")
+fi
+
+to_values_list () {
+  local -n outlist=$1
+  local -n inmap=$2
+
+  for param in "${!inmap[@]}"; do
+    if [[ $param == "0" ]]
+    then
+      continue
+    fi
+      outlist+="${inmap[$param]}"
+  done
+}
 
 declare -A STEPS
-source ./test.shellot
+source ./test.sh
 for KEY in "${!STEPS[@]}"; do
-  echo "Step: $KEY"
-  echo `${STEPS[$KEY]}`
+  list=()
+  if [[ "$feature" =~ $KEY ]]
+  then
+    to_values_list list BASH_REMATCH
+    ${STEPS[$KEY]} ${list[@]}
+    if [[ $? -eq 0 ]]
+    then
+      printf "\npass ${GREEN}✔ ${NORMAL} ${BASH_REMATCH[0]}\n"
+    else
+      printf "\nfail ${RED}✖ ${NORMAL} ${BASH_REMATCH[0]}\n"
+    fi
+  else 
+    echo 'no match!'
+  fi
+
 done
+

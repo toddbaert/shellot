@@ -1,2 +1,3 @@
-# shellot
-A gherkin framework for bash
+<div align="center">
+  <img src="shellot.png" width="500px;" >
+</div>
