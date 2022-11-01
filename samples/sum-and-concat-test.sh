@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# step needs to be a function
 STEPS["When \"([a-z]*)\" and \"([a-z]*)\" are appended"]=append_when
 STEPS["Then the result is \"([a-z\-]*)\""]=append_then
 STEPS["When ([0-9]+) and ([0-9]+) are added"]=sum_when
@@ -13,7 +14,7 @@ function append_when () {
 }
 
 function append_then () {
-  if [[ "$1" -eq $concatenated ]]; then
+  if [[ "$1" == $concatenated ]]; then
     return 0
   else
     return 1

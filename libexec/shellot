@@ -35,7 +35,6 @@ to_values_list () {
   done
 }
 
-
 for KEY in "${!STEPS[@]}"; do
   list=()
   if [[ "$feature" =~ $KEY ]]
