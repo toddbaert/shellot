@@ -8,7 +8,13 @@
 # TODO: add results table
 # TODO: make "STEPS" associative array name configurable
 
-declare -A STEPS
+function step () {
+  defs+=( "$1" )
+  funcs+=( "$2" )
+}
+
+declare -a defs
+declare -a funcs
 feature=`cat $1`
 source "$2"
 
@@ -35,12 +41,12 @@ to_values_list () {
   done
 }
 
-for KEY in "${!STEPS[@]}"; do
-  list=()
-  if [[ "$feature" =~ $KEY ]]
+for i in ${!defs[@]}; do
+  if [[ "$feature" =~ ${defs[i]} ]]
   then
+    list=()
     to_values_list list BASH_REMATCH
-    ${STEPS[$KEY]} ${list[@]}
+    ${funcs["$i"]} ${list[@]}
     if [[ $? -eq 0 ]]
     then
       printf "\n${GREEN}✔ ${NORMAL} ${BASH_REMATCH[0]}\n"

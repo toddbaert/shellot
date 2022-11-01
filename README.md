@@ -12,13 +12,13 @@ This is a work in progress so expect frequent improvements!
 
 Run it like: `./libexec/shellot thing.feature thing-test.sh`, where `thing.feature` is a gherkin file and `thing-test.sh` is an implementing test file.
 
-Tests are written in bash, and must return 0/1 to indicate success/failure. Tests must be indexed by their associated gherkin expression on the `STEPS` global:
+Tests are written in bash, and must return 0/1 to indicate success/failure. Tests must be registered by calling the `step` function with their associated gherkin expression as the first parameter, and the test function as the second:
 
 ```
 #!/usr/bin/env bash
 
-STEPS["When ([0-9]+) and ([0-9]+) are added"]=sum_when
-STEPS["Then the result is ([0-9]+)"]=sum_then
+step "When ([0-9]+) and ([0-9]+) are added" sum_when
+step "Then the result is ([0-9]+)" sum_then
 
 function sum_when () {
   sum=$(( $1 + $2 ))
