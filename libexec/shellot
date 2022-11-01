@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
-# TODO: add param for feature file
-# TODO: add param for test file
-# TODO: remove gherkin starting keywords (When, Then, etc)
+# TODO: convert args to proper flags/params
+# TODO: validate and trim gherkin starting keywords (When, Then, etc)
+# TODO: only assertions ("Then"s) should result in green checks
 # TODO: add "missing scenario" check
 # TODO: add "missing scenario" auto-scaffolding
 # TODO: add results table
 # TODO: make "STEPS" associative array name configurable
 
-feature=`cat ./samples/example.feature`
+declare -A STEPS
+feature=`cat $1`
+source "$2"
 
 if command -v tput &>/dev/null && tty -s; then
   RED=$(tput setaf 1)
@@ -29,12 +31,11 @@ to_values_list () {
     then
       continue
     fi
-      outlist+="${inmap[$param]}"
+      outlist+=(${inmap[$param]})
   done
 }
 
-declare -A STEPS
-source ./test.sh
+
 for KEY in "${!STEPS[@]}"; do
   list=()
   if [[ "$feature" =~ $KEY ]]
@@ -43,9 +44,9 @@ for KEY in "${!STEPS[@]}"; do
     ${STEPS[$KEY]} ${list[@]}
     if [[ $? -eq 0 ]]
     then
-      printf "\npass ${GREEN}✔ ${NORMAL} ${BASH_REMATCH[0]}\n"
+      printf "\n${GREEN}✔ ${NORMAL} ${BASH_REMATCH[0]}\n"
     else
-      printf "\nfail ${RED}✖ ${NORMAL} ${BASH_REMATCH[0]}\n"
+      printf "\n${RED}✖ ${NORMAL} ${BASH_REMATCH[0]}\n"
     fi
   else 
     echo 'no match!'
