@@ -14,7 +14,7 @@ Run it like: `./libexec/shellot -f thing.feature -t thing-test.sh`, where `thing
 
 Tests are written in bash, and must return 0/1 to indicate success/failure. Tests must be registered by calling the `step` function with their associated gherkin expression as the first parameter, and the test function as the second:
 
-```
+```shell
 #!/usr/bin/env bash
 
 When "([0-9]+) and ([0-9]+) are added" sum_when
