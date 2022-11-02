@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# TODO: convert args to proper flags/params
-# TODO: validate and trim gherkin starting keywords (When, Then, etc)
+# TODO: support dirs for -f and -t
+# TODO: Add additional keyword support
 # TODO: only assertions ("Then"s) should result in green checks
 # TODO: add "missing scenario" check
 # TODO: add "missing scenario" auto-scaffolding
@@ -20,22 +20,62 @@ fi
 
 declare -a defs
 declare -a funcs
+declare -a whens
+declare -a thens
 
 function When () {
-  step "$1" "$2"
+  step "$1" "$2" "whens"
 }
 
 function Then () {
-  step "$1" "$2"
+  step "$1" "$2" "thens"
 }
 
 function step () {
   defs+=( "$1" )
   funcs+=( "$2" )
+  index=$((${#defs[@]} - 1))
+  
+  case $3 in
+    "whens")
+      whens[$index]="$1"
+      ;;
+
+    "thens")
+      thens[$index]="$1"
+      ;;
+
+    *)
+      echo none
+      ;;
+  esac
 }
 
-feature=`cat $1`
-source "$2"
+unset flags
+flags=()
+
+while [[ "$#" -ne 0 ]]; do
+  case "$1" in
+  -f | --features)
+    shift
+    feature=`cat $1`
+    ;;
+  -t | --tests)
+    shift
+    test="$1"
+    ;;
+  -v | --version)
+    printf "pre-release\n"
+    exit 0
+    ;;
+  *)
+    arguments+=("$1")
+    ;;
+  esac
+  shift
+done
+
+source "$test"
 
 to_values_list () {
   local -n outlist=$1
@@ -58,13 +98,20 @@ for i in ${!defs[@]}; do
     ${funcs["$i"]} ${list[@]}
     if [[ $? -eq 0 ]]
     then
-      printf "\n${GREEN}✔ ${NORMAL} ${BASH_REMATCH[0]}\n"
+      if [[ "${whens["$i"]}" == "${defs["$i"]}" ]];
+      then
+        printf "\nWhen ${BASH_REMATCH[0]}"
+      elif [[ "${thens["$i"]}" == "${defs["$i"]}" ]];
+      then
+        printf "\n\t${GREEN}✔${NORMAL} Then ${BASH_REMATCH[0]}"
+      fi
     else
-      printf "\n${RED}✖ ${NORMAL} ${BASH_REMATCH[0]}\n"
+      printf "\n${RED}✖ ${NORMAL} ${BASH_REMATCH[0]}"
     fi
   else 
     echo 'no match!'
   fi
-
 done
+printf "\n"
+
 
