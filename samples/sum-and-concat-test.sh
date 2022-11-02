@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-step "When \"([a-z]*)\" and \"([a-z]*)\" are appended" append_when
-step "Then the result is \"([a-z]*)\"" append_then
-step "When ([0-9]+) and ([0-9]+) are added" sum_when
-step "Then the result is ([0-9]+)" sum_then
+When "\"([a-z]*)\" and \"([a-z]*)\" are appended" append_when
+Then "the result is \"([a-z]*)\"" append_then
+When "([0-9]+) and ([0-9]+) are added" sum_when
+Then "the result is ([0-9]+)" sum_then
 
 declare concatenated
 declare sum

@@ -8,16 +8,6 @@
 # TODO: add results table
 # TODO: make "STEPS" associative array name configurable
 
-function step () {
-  defs+=( "$1" )
-  funcs+=( "$2" )
-}
-
-declare -a defs
-declare -a funcs
-feature=`cat $1`
-source "$2"
-
 if command -v tput &>/dev/null && tty -s; then
   RED=$(tput setaf 1)
   GREEN=$(tput setaf 2)
@@ -27,6 +17,25 @@ else
   GREEN=$(echo -en "\e[32m")
   NORMAL=$(echo -en "\e[00m")
 fi
+
+declare -a defs
+declare -a funcs
+
+function When () {
+  step "$1" "$2"
+}
+
+function Then () {
+  step "$1" "$2"
+}
+
+function step () {
+  defs+=( "$1" )
+  funcs+=( "$2" )
+}
+
+feature=`cat $1`
+source "$2"
 
 to_values_list () {
   local -n outlist=$1
