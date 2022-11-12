@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO: parsing is very rudimentary... should be improved to be more contextual (so we can know if an 'And' is a 'When' vs 'Then' child, for example)
+  # parse into defs arrays, plus other keyword arrays... use index and searching to understand context
 # TODO: support dirs for -f and -t
 # TODO: Add additional keyword support
 # TODO: only assertions ("Then"s) should result in green checks
@@ -18,13 +20,20 @@ else
   NORMAL=$(echo -en "\e[00m")
 fi
 
+# see above TODO about parsing...
+
 declare -a defs
 declare -a funcs
 declare -a whens
+declare -a givens
 declare -a thens
 
 function When () {
   step "$1" "$2" "whens"
+}
+
+function Given () {
+  step "$1" "$2" "givens"
 }
 
 function Then () {
@@ -41,6 +50,10 @@ function step () {
       whens[$index]="$1"
       ;;
 
+    "givens")
+      givens[$index]="$1"
+      ;;
+
     "thens")
       thens[$index]="$1"
       ;;
@@ -51,7 +64,7 @@ function step () {
   esac
 }
 
-unset flags
+#unset flags
 flags=()
 
 while [[ "$#" -ne 0 ]]; do
@@ -101,6 +114,9 @@ for i in ${!defs[@]}; do
       if [[ "${whens["$i"]}" == "${defs["$i"]}" ]];
       then
         printf "\nWhen ${BASH_REMATCH[0]}"
+      elif [[ "${givens["$i"]}" == "${defs["$i"]}" ]];
+      then
+        printf "\nGiven ${BASH_REMATCH[0]}"
       elif [[ "${thens["$i"]}" == "${defs["$i"]}" ]];
       then
         printf "\n\t${GREEN}✔${NORMAL} Then ${BASH_REMATCH[0]}"

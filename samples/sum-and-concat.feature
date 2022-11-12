@@ -1,7 +1,7 @@
 Feature: Tests with injected values
 
   Scenario: Append
-    When "foo" and "bar" are appended
+    Given "foo" and "bar" are appended
     Then the result is "foobar"
 
   Scenario: Addition
