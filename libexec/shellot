@@ -27,6 +27,7 @@ declare -a funcs
 declare -a whens
 declare -a givens
 declare -a thens
+declare -a ands
 
 function When () {
   step "$1" "$2" "whens"
@@ -38,6 +39,10 @@ function Given () {
 
 function Then () {
   step "$1" "$2" "thens"
+}
+
+function And () {
+  step "$1" "$2" "ands"
 }
 
 function step () {
@@ -56,6 +61,10 @@ function step () {
 
     "thens")
       thens[$index]="$1"
+      ;;
+
+    "ands")
+      ands[$index]="$1"
       ;;
 
     *)
